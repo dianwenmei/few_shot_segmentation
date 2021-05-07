@@ -264,6 +264,7 @@ class SemData(Dataset):
 
         if self.mode == 'train':
             return image, label,boundry_label, s_x, s_y, s_init_seed, subcls_list
+        
         else:
             return image, label, s_x, s_y, s_init_seed, subcls_list, raw_label #, index, class_chosen
 
