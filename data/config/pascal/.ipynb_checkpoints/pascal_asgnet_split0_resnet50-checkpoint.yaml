@@ -10,7 +10,7 @@ DATA:
 #  classes: 2
 
 TRAIN:
-  arch: asgnet #asgnet  # _memory_bank_v3  #asgnet_memory_bank_v3
+  arch: asgnet_memory_bank_v3 #asgnet  # _memory_bank_v3  #asgnet_memory_bank_v3
   layers: 50
   sync_bn: False
   train_h: 473
@@ -37,8 +37,8 @@ TRAIN:
   manual_seed: 321
   print_freq: 5
   save_freq: 20
-  save_path: exp/asgnet_one_prototype/pascal/split0_resnet50/model
-  weight: exp/asgnet_one_prototype/pascal/split0_resnet50/model/train_epoch_144_0.5704117743949944.pth # exp/asgnet_memory_bank_v4/pascal/split0_resnet50/model/train_epoch_28_0.5750041986747068.pth # exp/asgnet_memory_bank/pascal/split0_resnet50/model/train_epoch_88_0.5757419312299488.pth # exp/asgnet_memory_bank/pascal/split1_resnet50/model/train_epoch_104_0.6866028573329549.pth 
+  save_path: exp/asgnet_memory_bank_v3/pascal/split0_resnet50/model
+  weight: exp/asgnet_memory_bank_v3/pascal/split0_resnet50/model/train_epoch_98_0.5807202073933011.pth # exp/asgnet_memory_bank_v4/pascal/split0_resnet50/model/train_epoch_28_0.5750041986747068.pth # exp/asgnet_memory_bank/pascal/split0_resnet50/model/train_epoch_88_0.5757419312299488.pth # exp/asgnet_memory_bank/pascal/split1_resnet50/model/train_epoch_104_0.6866028573329549.pth 
   resume:
   evaluate: True
   split: 0

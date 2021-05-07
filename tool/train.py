@@ -1,4 +1,4 @@
-﻿import os
+import os
 import random
 import time
 import cv2
@@ -229,14 +229,14 @@ def train(train_loader, model, optimizer, epoch):
         s_init_seed = s_init_seed.cuda(non_blocking=True)
 
         # todo：模型输入
-        output, main_loss, aux_loss = model(s_x=s_input, s_y=s_mask, x=input, y=target, s_seed=s_init_seed)
+        output, main_loss, aux_loss,boundry_loss = model(s_x=s_input, s_y=s_mask, x=input, y=target, s_seed=s_init_seed, y_boundry=boundry_target)
 
         if not args.multiprocessing_distributed:
             main_loss, aux_loss = torch.mean(main_loss), torch.mean(aux_loss)
             
         ## todo #######################
-#         loss = main_loss + args.aux_weight * aux_loss + boundry_loss
-        loss = main_loss + args.aux_weight * aux_loss
+        loss = main_loss + args.aux_weight * aux_loss + boundry_loss
+#         loss = main_loss + args.aux_weight * aux_loss
 
         optimizer.zero_grad()
 

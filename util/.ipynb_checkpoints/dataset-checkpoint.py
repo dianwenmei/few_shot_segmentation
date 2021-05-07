@@ -158,7 +158,7 @@ class SemData(Dataset):
         image_path, label_path = self.data_list[index]
         image = cv2.imread(image_path, cv2.IMREAD_COLOR) 
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  
-        image = np.float32(image)
+        image = np.float32(image) 
         label = cv2.imread(label_path, cv2.IMREAD_GRAYSCALE)  
 
         if image.shape[0] != label.shape[0] or image.shape[1] != label.shape[1]:
@@ -185,9 +185,11 @@ class SemData(Dataset):
         target_pix = np.where(label == class_chosen)
         ignore_pix = np.where(label == 255)
         label[:,:] = 0
+        boundry_label = [:,:] = 0
         if target_pix[0].shape[0] > 0:
             label[target_pix[0],target_pix[1]] = 1 
-        label[ignore_pix[0],ignore_pix[1]] = 255           
+        label[ignore_pix[0],ignore_pix[1]] = 255  
+        boundry_label[ignore_pix[0], ignore_pix[1]] = 255
 
 
         file_class_chosen = self.sub_class_file_list[class_chosen]
@@ -233,8 +235,10 @@ class SemData(Dataset):
         assert len(support_label_list) == self.shot and len(support_image_list) == self.shot                    
         
         raw_label = label.copy()
+        image_copy = image.detach()
         if self.transform is not None:
             image, label = self.transform(image, label)
+            _, boundry_label = self.transform(image, boundry_label)
             for k in range(self.shot):
                 support_image_list[k], support_label_list[k] = self.transform(support_image_list[k], support_label_list[k])
 
@@ -259,7 +263,7 @@ class SemData(Dataset):
         s_init_seed = torch.cat(init_seed_list, 0)  # (shot, max_num_sp, 2)
 
         if self.mode == 'train':
-            return image, label, s_x, s_y, s_init_seed, subcls_list
+            return image, label,boundry_label, s_x, s_y, s_init_seed, subcls_list
         else:
             return image, label, s_x, s_y, s_init_seed, subcls_list, raw_label #, index, class_chosen
 

@@ -242,7 +242,7 @@ class Model(nn.Module):
             # self.dic_tensor = torch.cat(dic_list, dim=0)  # 15 * 256 * 1 * 1
         self.init_memory = nn.Embedding(20, 256)
 
-    def forward(self, x, s_x=torch.FloatTensor(1,1,3,473,473).cuda(), s_y=torch.FloatTensor(1,1,473,473).cuda(), s_seed=None, y=None):
+    def forward(self, x, s_x=torch.FloatTensor(1,1,3,473,473).cuda(), s_y=torch.FloatTensor(1,1,473,473).cuda(), s_seed=None, y=None, y_boundry):
         # x.shape = B * 3 * w * h
         # y.shape = B * w * h
         # s_x.shape = B * k * 3 * w * h
@@ -349,18 +349,6 @@ class Model(nn.Module):
         
 
 ########################### Context Module ###########################
-
-        ############################################# sub module  predict  the boundry
-        boundry_feat = torch.cat([query_feat, aug_z_list])  # bs x 2c x h x w
-        boundry_feat = self.boundry_layers(boundry_feat)
-        boundry_feat = boundry_feat + self.boundry_skip1(boundry_feat)
-        boundry_feat = boundry_feat + self.boundry_skip2(boundry_feat)
-        boundry_feat = boundry_feat + self.boundry_skip3(boundry_feat)
-        boundry_cls = self.boundry_cls(boundry_feat) # b * 2 * h * w
-        
-        boundry_out = F.interpolate(boundry_cls, size=(h, w), mode='bilinear', align_corners=True)
-        boundry_loss = self.criterion(boundry_out, y_boundry.long())
-        ###########################################################################
         
         if self.pyramid:
 
@@ -410,6 +398,18 @@ class Model(nn.Module):
             out = F.interpolate(out, size=(h, w), mode='bilinear', align_corners=True)
 
         if self.training:
+             ############################################# sub module  predict  the boundry
+            boundry_feat = torch.cat([query_feat, aug_z_list])  # bs x 2c x h x w
+            boundry_feat = self.boundry_layers(boundry_feat)
+            boundry_feat = boundry_feat + self.boundry_skip1(boundry_feat)
+            boundry_feat = boundry_feat + self.boundry_skip2(boundry_feat)
+            boundry_feat = boundry_feat + self.boundry_skip3(boundry_feat)
+            boundry_cls = self.boundry_cls(boundry_feat) # b * 2 * h * w
+
+            boundry_out = F.interpolate(boundry_cls, size=(h, w), mode='bilinear', align_corners=True)
+            boundry_loss = self.criterion(boundry_out, y_boundry.long())
+            
+            ###########################################################################
             main_loss = self.criterion(out, y.long())
             aux_loss = torch.zeros_like(main_loss).cuda()
 
@@ -424,7 +424,7 @@ class Model(nn.Module):
                 aux_out = F.interpolate(aux_out, size=(h, w), mode='bilinear', align_corners=True)
                 aux_loss = self.criterion(aux_out, y.long())
 
-            return out.max(1)[1], main_loss, aux_loss
+            return out.max(1)[1], main_loss, aux_loss,boundry_loss
         else:
             return out
 
